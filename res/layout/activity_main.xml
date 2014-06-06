@@ -17,14 +17,15 @@
         android:textSize="18dp" />
     
     <TextView
-    android:id="@+id/fieldLatitude"
-    android:layout_width="wrap_content"
-    android:layout_alignRight="@+id/fieldCity"
-    android:layout_below="@+id/fieldLongitude"
-    android:layout_alignParentTop="true"
-    android:layout_centerHorizontal="true"
-    android:textSize="18dp"
-    android:text="TextViewLati" />
+        android:id="@+id/fieldLatitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/fieldCity"
+        android:layout_below="@+id/fieldLongitude"
+        android:layout_centerHorizontal="true"
+        android:text="TextViewLati"
+        android:textSize="18dp" />
     
     <TextView
         android:id="@+id/fieldCity"
@@ -69,6 +70,17 @@
     android:layout_toRightOf="@+id/fieldLatitude"
     android:text="Refresh" />
 
-
+<Button
+    android:id="@+id/Logout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignRight="@+id/Refresh"
+    android:layout_below="@+id/Refresh"
+    android:layout_marginTop="42dp"
+    android:text="Logout" />
     
+ <fragment android:name="com.facebook.widget.UserSettingsFragment"
+          android:id="@+id/userSettingsFragment"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent" />
 </RelativeLayout>

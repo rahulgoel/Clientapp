@@ -4,5 +4,6 @@
     <string name="app_name">ClientApp</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-
+    <string name="app_id">240346492827700</string>
+	<string name="settings">Settings</string>
 </resources>
