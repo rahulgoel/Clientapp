@@ -15,8 +15,8 @@ public class UserFunctions {
      
     // Testing in localhost using wamp or xampp 
     // use http://10.0.2.2/ to connect to your localhost ie http://localhost/
-    private static String loginURL = "http://192.168.1.3/test/reply.php";
-    private static String registerURL = "http://192.168.1.3/test/reply.php";
+    private static String loginURL = "http://bclub.co.in/reply.php";
+    private static String registerURL = "http://bclub.co.in/reply.php";
      
     private static String login_tag = "login";
     private static String register_tag = "register";

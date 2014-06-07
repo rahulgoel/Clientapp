@@ -61,17 +61,7 @@ public class LoginActivity extends Activity {
                 String email = inputEmail.getText().toString();
                 String password = inputPassword.getText().toString();
                 UserFunctions userFunction = new UserFunctions();
-                JSONObject json = userFunction.loginUser(email, password);
-                DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-                JSONObject json_user=null;
-				try {
-					json_user = json.getJSONObject("user");
-				} catch (JSONException e1) {
-					// TODO Auto-generated catch block
-					Log.e("LoginActiviy",e1.toString());
-					e1.printStackTrace();
-				}
-                
+                JSONObject json = userFunction.loginUser(email, password);      
                 //  System.out.println("We reach here");
               //  ProgressDialog pd = new ProgressDialog(LoginActivity.this);
              //   pd.setMessage("loading");
@@ -80,8 +70,10 @@ public class LoginActivity extends Activity {
              //   System.out.println("We reach here1");
                 // check for login response
                 try {
-                    if (json.getString(KEY_SUCCESS) != null) {
-                        loginErrorMsg.setText("");
+                         if (json.getString(KEY_SUCCESS) != null) {
+                    	 DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+                    	JSONObject 	json_user = json.getJSONObject("user");
+                    	loginErrorMsg.setText("");
                         String res = json.getString(KEY_SUCCESS); 
                         if(Integer.parseInt(res) == 1){
                             // user successfully logged in
@@ -105,9 +97,15 @@ public class LoginActivity extends Activity {
                             loginErrorMsg.setText("Incorrect username/password");
                         }
                     }
-                } catch (JSONException e) {
+                }
+                catch (JSONException e) {
                     e.printStackTrace();
                 }
+                catch (Exception e){
+                	loginErrorMsg.setText("SERVER May not be running");
+                	Log.e("Caught","NULL"+e.toString());
+                }
+                 
             }
         });
  
@@ -144,6 +142,7 @@ public class LoginActivity extends Activity {
 	               //             db.addUser(json_user.getString(KEY_NAME), json_user.getString(KEY_EMAIL), json.getString(KEY_UID), json_user.getString(KEY_CREATED_AT));                        
 	                             
 	                            // Launch Dashboard Screen
+	                          	MainActivity.Logged=true;
 	                            Intent dashboard = new Intent(getApplicationContext(), MainActivity.class);
 	                             
 	                            // Close all views before launching Dashboard

@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,16 +28,24 @@ public class MainActivity extends FragmentActivity {
     TextView textview;
     GPSTracker gpsTracker;
     private MenuItem settings;
-    @SuppressLint("NewApi")
-	FragmentManager fm = getSupportFragmentManager();
-    Fragment fragment_setting= new Fragment();
+    private boolean isResumed = false;
+    public static boolean Logged;
+//	FragmentManager fm = getSupportFragmentManager();
+  //  Fragment fragment_setting;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    //    fragment_setting=new Fragment();
+    	super.onCreate(savedInstanceState);
         userFunctions= new UserFunctions();
        
-        fragment_setting = fm.findFragmentById(R.id.userSettingsFragment);
-        if(userFunctions.isUserLoggedIn(getApplicationContext())){
+      //  fragment_setting = fm.findFragmentById(R.id.userSettingsFragment);
+      //  FragmentTransaction transaction= fm.beginTransaction();
+      //  transaction.hide(fragment_setting);
+     //   transaction.commit();
+     
+        Logged=userFunctions.isUserLoggedIn(getApplicationContext());
+        Logged= isLoggedIn();
+        if(Logged){
         	setContentView(R.layout.activity_main);
         	gpsTracker  = new GPSTracker(this);
         	// check if GPS enabled
@@ -88,7 +97,25 @@ public class MainActivity extends FragmentActivity {
         }
         
     }
-    
+    @Override
+    public void onResume() {
+        super.onResume();
+        isResumed = true;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        isResumed = false;
+    }
+    public boolean isLoggedIn() {
+        Session session = Session.getActiveSession();
+        if (session != null && session.isOpened()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     public void setString(GPSTracker gpsTracker){
     	  String stringLatitude = String.valueOf(gpsTracker.latitude);
           textview = (TextView)findViewById(R.id.fieldLatitude);
@@ -120,23 +147,30 @@ public class MainActivity extends FragmentActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // only add the menu when the selection fragment is showing
-        if (fragment_setting.isVisible()) {
+        try{
+    //	if (fragment_setting.isVisible()) {
             if (menu.size() == 0) {
                 settings = menu.add(R.string.settings);
             }
             return true;
-        } else {
-            menu.clear();
-            settings = null;
+      //  } else {
+         //   menu.clear();
+        //   settings = null;
+     //   }
+       }
+        catch(Exception e){
+        	Log.e("MainActivity","NULL IT SEEMS"+ e.toString());
         }
         return false;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.equals(settings)) {
-            showFragment(fragment_setting, true);
+        	setContentView(R.layout.menu);
+         //   showFragment(fragment_setting, true);
             return true;
         }
+   //     else showFragment(fragment_setting, false);
         return false;
     }
     private void showFragment(Fragment frag, boolean addToBackStack) {
@@ -149,7 +183,8 @@ public class MainActivity extends FragmentActivity {
 //                transaction.hide(fragments[i]);
 //            }
 //        }
-        transaction.show(frag);
+      //  transaction.show(frag);
+        transaction.hide(frag);
         if (addToBackStack) {
             transaction.addToBackStack(null);
         }
