@@ -63,21 +63,33 @@
 
 <Button
     android:id="@+id/Refresh"
-    android:layout_width="wrap_content"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_below="@+id/fieldCountry"
-    android:layout_marginTop="72dp"
-    android:layout_toRightOf="@+id/fieldLatitude"
+    android:layout_below="@+id/btn_show_map"
     android:text="Refresh" />
 
 <Button
     android:id="@+id/Logout"
-    android:layout_width="wrap_content"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:layout_alignRight="@+id/Refresh"
     android:layout_below="@+id/Refresh"
-    android:layout_marginTop="42dp"
+    
     android:text="Logout" />
     
+    <!-- Show on Map button -->
+    <Button android:id="@+id/btn_show_map"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Show Places on Map"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dip"/>
+     
+    <!--  List view -->
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Logout"/>
 
 </RelativeLayout>

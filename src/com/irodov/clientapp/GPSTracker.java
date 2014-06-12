@@ -184,40 +184,37 @@ public class GPSTracker extends Service implements LocationListener
     /**
      * Function to show settings alert dialog
      */
-    public void showSettingsAlert()
-    {
+    public void showSettingsAlert() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
-
-        //Setting Dialog Title
-        alertDialog.setTitle("Location Service is off");
-
-        //Setting Dialog Message
-        alertDialog.setMessage("Kindly Turn on Location Service");
-
-        //On Pressing Setting button
-        alertDialog.setPositiveButton("Turn On GPS", new DialogInterface.OnClickListener() 
-        {   
-            @Override
-            public void onClick(DialogInterface dialog, int which) 
-            {
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                mContext.startActivity(intent);
-            }
-        });
-
-        //On pressing cancel button
-        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() 
-        {   
-            @Override
-            public void onClick(DialogInterface dialog, int which) 
-            {
-                dialog.cancel();
-            }
-        });
-
+ 
+        // Setting Dialog Title
+        alertDialog.setTitle("GPS is settings");
+ 
+        // Setting Dialog Message
+        alertDialog
+                .setMessage("GPS is not enabled. Do you want to go to settings menu?");
+ 
+        // On pressing Settings button
+        alertDialog.setPositiveButton("Settings",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(
+                                Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        mContext.startActivity(intent);
+                    }
+                });
+ 
+        // on pressing cancel button
+        alertDialog.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+ 
+        // Showing Alert Message
         alertDialog.show();
     }
-
     /**
      * Get list of address by latitude and longitude
      * @return null or List<Address>
