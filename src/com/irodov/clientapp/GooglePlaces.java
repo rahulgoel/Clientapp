@@ -8,6 +8,7 @@ import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonObjectParser;
@@ -19,8 +20,8 @@ public class GooglePlaces {
     /** Global instance of the HTTP transport. */
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
  
+    private static final String API_KEY = "AIzaSyAwdV5VH_MA7DEiUC7b67Gek8p_cBBQCZ0";
     // Google API Key
-    private static final String API_KEY = "AIzaSyCiaInF1lAX7Lnz_6VMcS-ob3La46UM0ZU";
  
     // Google Places search url's
     private static final String PLACES_SEARCH_URL = "https://maps.googleapis.com/maps/api/place/search/json?";
@@ -60,10 +61,11 @@ public class GooglePlaces {
            // Log.d("Places","Check1");
             if(types != null)
                 request.getUrl().put("types", types);
- 
+            HttpResponse l1 = request.execute();
             PlacesList list = request.execute().parseAs(PlacesList.class);
             // Check log cat for places response status
             Log.d("Places Status", "" + list.status);
+            Log.d("Places Status", "" + l1.parseAsString());
             return list;
  
         } catch (HttpResponseException e) {

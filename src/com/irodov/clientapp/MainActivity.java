@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -21,8 +23,11 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.facebook.Session;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 public class MainActivity extends FragmentActivity {
+	
 	UserFunctions userFunctions ;
     TextView textview;
     GPSTracker gpsTracker;
@@ -31,7 +36,9 @@ public class MainActivity extends FragmentActivity {
     public static boolean Logged;
     // flag for Internet connection status
     boolean isInternetPresent = false;
- 
+    
+    private SlidingMenu menu; 
+   
     // Connection detector class
     ConnectionDetector cd;
      
@@ -71,7 +78,8 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {    
     	super.onCreate(savedInstanceState);
         userFunctions= new UserFunctions();
-        Log.d("Debug","we are here1");
+        int status=GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext());
+        Log.d("hello","status"+status);
         cd = new ConnectionDetector(getApplicationContext());
       //  fragment_setting = fm.findFragmentById(R.id.userSettingsFragment);
       //  FragmentTransaction transaction= fm.beginTransaction();
@@ -118,18 +126,21 @@ public class MainActivity extends FragmentActivity {
       
              // calling background Async task to load Google Places
              // After getting places from Google all the data is shown in listview
+
              new LoadPlaces().execute();
+             
              Log.d("Debug","we are here");
+             
              /** Button click event for shown on map */
              btnShowOnMap.setOnClickListener(new View.OnClickListener() {
-             
+            	
                  @Override
                  public void onClick(View v) {
                      Intent i = new Intent(getApplicationContext(),
                              PlacesMapActivity.class);
                      // Sending user current geo location
-                     i.putExtra("user_latitude", Double.toString(gps.getLatitude()));
-                     i.putExtra("user_longitude", Double.toString(gps.getLongitude()));
+                     i.putExtra("user_latitude", Double.toString(gpsTracker.getLatitude()));
+                     i.putExtra("user_longitude", Double.toString(gpsTracker.getLongitude()));
                       
                      // passing near places to map activity
                      i.putExtra("near_places", nearPlaces);
@@ -137,7 +148,24 @@ public class MainActivity extends FragmentActivity {
                      startActivity(i);
                  }
              });
-        	
+             lv.setOnItemClickListener(new OnItemClickListener() {
+            	  
+                 @Override
+                 public void onItemClick(AdapterView<?> parent, View view,
+                         int position, long id) {
+                     // getting values from selected ListItem
+                     String reference = ((TextView) view.findViewById(R.id.reference)).getText().toString();
+                      
+                     // Starting new intent
+                     Intent in = new Intent(getApplicationContext(),
+                             SinglePlaceActivity.class);
+                      
+                     // Sending place refrence id to single place activity
+                     // place refrence id used to get "Place full details"
+                     in.putExtra(KEY_REFERENCE, reference);
+                     startActivity(in);
+                 }
+             });
 	        refresh.setOnClickListener(new View.OnClickListener()  
 	        {
 				@Override
@@ -160,7 +188,32 @@ public class MainActivity extends FragmentActivity {
                     // Closing dashboard screen
                     finish();	
 				}
-			});	        	       
+			});
+	        
+	        Log.d("Debug","Before SlidingMenu");
+	        
+	        try{
+	    	 
+
+	    	String list[]={"Shops","Clothes"};
+	        menu = new SlidingMenu(this);
+			menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+		//	menu.setShadowWidthRes(R.dimen.shadow_width);
+			menu.setShadowDrawable(R.drawable.shadow);
+		//	menu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+			menu.setFadeDegree(0.35f);
+			menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
+			menu.setMenu(R.layout.menu_frame);
+			MenuList Menu= newInstance(list);
+			getSupportFragmentManager()
+			.beginTransaction()
+			.replace(R.id.menu_frame, Menu)
+			.commit();
+	     }
+	     catch(Exception e){
+	    	 Log.e("SlidingMenu",e.toString());
+	     }
+	        
 	    }
         else{
         	 Intent login = new Intent(getApplicationContext(), LoginActivity.class);
@@ -176,6 +229,25 @@ public class MainActivity extends FragmentActivity {
         super.onResume();
         isResumed = true;
     }
+
+    @Override
+	public void onBackPressed() {
+		if (menu.isMenuShowing()) {
+			menu.showContent();
+		} else {
+			super.onBackPressed();
+		}
+	}
+    
+    public static MenuList newInstance(String S[]){
+    	 Bundle bundle = new Bundle();
+	        String myMessage[] = S;
+	        bundle.putStringArray("Places", myMessage);
+			MenuList Menu = new MenuList();
+			Menu.setArguments(bundle);
+			return Menu;
+    }
+    
     class LoadPlaces extends AsyncTask<String, String, String> {
     	 
         /**

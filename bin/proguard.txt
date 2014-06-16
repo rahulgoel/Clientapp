@@ -45,31 +45,37 @@
 # view res/layout/abc_search_view.xml #generated:85
 -keep class android.support.v7.widget.SearchView$SearchAutoComplete { <init>(...); }
 
-# view AndroidManifest.xml #generated:57
+# view AndroidManifest.xml #generated:64
 -keep class com.facebook.LoginActivity { <init>(...); }
 
 # view res/layout/com_facebook_usersettingsfragment.xml #generated:48
-# view res/layout/login.xml #generated:61
+# view res/layout/login.xml #generated:63
 -keep class com.facebook.widget.LoginButton { <init>(...); }
 
 # view res/layout/menu.xml #generated:6
 -keep class com.facebook.widget.UserSettingsFragment { <init>(...); }
 
-# view res/layout/map_places.xml #generated:2
--keep class com.google.android.maps.MapView { <init>(...); }
+# view res/layout/map_places.xml #generated:8
+-keep class com.google.android.gms.maps.MapFragment { <init>(...); }
 
-# view AndroidManifest.xml #generated:33
--keep class com.irodov.clientapp.LoginActivity { <init>(...); }
-
-# view AndroidManifest.xml #generated:24
--keep class com.irodov.clientapp.MainActivity { <init>(...); }
-
-# view AndroidManifest.xml #generated:48
--keep class com.irodov.clientapp.PlacesMapActivity { <init>(...); }
+# view res/layout/text_bubble.xml #generated:8
+-keep class com.google.maps.android.ui.RotationLayout { <init>(...); }
 
 # view AndroidManifest.xml #generated:38
--keep class com.irodov.clientapp.RegisterActivity { <init>(...); }
+-keep class com.irodov.clientapp.LoginActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:29
+-keep class com.irodov.clientapp.MainActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:53
+-keep class com.irodov.clientapp.PlacesMapActivity { <init>(...); }
 
 # view AndroidManifest.xml #generated:43
+-keep class com.irodov.clientapp.RegisterActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:48
 -keep class com.irodov.clientapp.SinglePlaceActivity { <init>(...); }
+
+# view res/layout/slidingmenumain.xml #generated:2
+-keep class com.jeremyfeinstein.slidingmenu.lib.SlidingMenu { <init>(...); }
 
