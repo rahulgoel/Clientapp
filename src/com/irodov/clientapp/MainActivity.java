@@ -1,13 +1,16 @@
 package com.irodov.clientapp;
 
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.Html;
 import android.util.Log;
@@ -21,17 +24,19 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.Session;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
 public class MainActivity extends FragmentActivity {
 	
 	UserFunctions userFunctions ;
     TextView textview;
     GPSTracker gpsTracker;
-    private MenuItem settings;
+    private MenuItem settings,contact;
     private boolean isResumed = false;
     public static boolean Logged;
     // flag for Internet connection status
@@ -75,7 +80,7 @@ public class MainActivity extends FragmentActivity {
 //	FragmentManager fm = getSupportFragmentManager();
   //  Fragment fragment_setting;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {    
+	public void onCreate(Bundle savedInstanceState) {    
     	super.onCreate(savedInstanceState);
         userFunctions= new UserFunctions();
         int status=GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext());
@@ -126,8 +131,9 @@ public class MainActivity extends FragmentActivity {
       
              // calling background Async task to load Google Places
              // After getting places from Google all the data is shown in listview
-
-             new LoadPlaces().execute();
+             
+             String place ="cafe";
+             new LoadPlaces().execute(place);
              
              Log.d("Debug","we are here");
              
@@ -195,12 +201,12 @@ public class MainActivity extends FragmentActivity {
 	        try{
 	    	 
 
-	    	String list[]={"Shops","Clothes"};
+	    	String list[]={"clothing_store","shoe_store"};
 	        menu = new SlidingMenu(this);
 			menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-		//	menu.setShadowWidthRes(R.dimen.shadow_width);
+			menu.setShadowWidthRes(R.dimen.shadow_width);
 			menu.setShadowDrawable(R.drawable.shadow);
-		//	menu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+			menu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
 			menu.setFadeDegree(0.35f);
 			menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
 			menu.setMenu(R.layout.menu_frame);
@@ -209,7 +215,9 @@ public class MainActivity extends FragmentActivity {
 			.beginTransaction()
 			.replace(R.id.menu_frame, Menu)
 			.commit();
-	     }
+			
+	        
+	        }
 	     catch(Exception e){
 	    	 Log.e("SlidingMenu",e.toString());
 	     }
@@ -266,17 +274,18 @@ public class MainActivity extends FragmentActivity {
         /**
          * getting Places JSON
          * */
-        protected String doInBackground(String... args) {
+        protected String doInBackground(String... places) {
             // creating Places class object
             //googlePlaces = new GooglePlaces();
              Log.d("Back","are we ever:"+gpsTracker.getLatitude());
              
             try {
+            	
                 // Separeate your place types by PIPE symbol "|"
                 // If you want all types places make it as null
                 // Check list of types supported by google
                 // 
-                String types = "cafe|restaurant"; // Listing places only cafes, restaurants
+                String types = places[0]; // Listing places only cafes, restaurants
                  
                 // Radius in meters - increase this value if you don't find any places
                 double radius = 1000; // 1000 meters 
@@ -438,6 +447,7 @@ public class MainActivity extends FragmentActivity {
     //	if (fragment_setting.isVisible()) {
             if (menu.size() == 0) {
                 settings = menu.add(R.string.settings);
+                contact = menu.add(R.string.contact);
             }
             return true;
       //  } else {
@@ -457,9 +467,24 @@ public class MainActivity extends FragmentActivity {
          //   showFragment(fragment_setting, true);
             return true;
         }
+        else if(item.equals(contact)){
+        	final Intent email = new Intent(android.content.Intent.ACTION_SENDTO);
+			String uriText = "mailto:irodov.rg@gmail.com" +
+					"?subject=" + URLEncoder.encode("SlidingMenu Demos Feedback"); 
+			email.setData(Uri.parse(uriText));
+			try {
+				startActivity(email);
+			} catch (Exception e) {
+				Toast.makeText(this, "Cannot send mail", Toast.LENGTH_SHORT).show();
+			}
+			
+        }
    //     else showFragment(fragment_setting, false);
         return false;
     }
-       
+    
+  //  public void switchContent(Fragment fragment){
+   // 	getSlidingMenu().showContent();
+   // }
 
 }

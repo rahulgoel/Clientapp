@@ -180,10 +180,12 @@ int bool abc_config_actionMenuItemAllCaps 0x7f060005
 int bool abc_config_allowActionMenuItemTextWithIcon 0x7f060004
 int bool abc_config_showMenuShortcutsWhenKeyboardPresent 0x7f060003
 int bool abc_split_action_bar_is_narrow 0x7f060002
-int color abc_search_url_text_holo 0x7f070021
+int color abc_search_url_text_holo 0x7f070026
 int color abc_search_url_text_normal 0x7f070000
 int color abc_search_url_text_pressed 0x7f070002
 int color abc_search_url_text_selected 0x7f070001
+int color black 0x7f070025
+int color blue 0x7f070023
 int color com_facebook_blue 0x7f070005
 int color com_facebook_loginview_text_color 0x7f070009
 int color com_facebook_picker_search_bar_background 0x7f070003
@@ -201,8 +203,10 @@ int color common_signin_btn_light_text_default 0x7f07000e
 int color common_signin_btn_light_text_disabled 0x7f070010
 int color common_signin_btn_light_text_focused 0x7f070011
 int color common_signin_btn_light_text_pressed 0x7f07000f
-int color common_signin_btn_text_dark 0x7f070022
-int color common_signin_btn_text_light 0x7f070023
+int color common_signin_btn_text_dark 0x7f070027
+int color common_signin_btn_text_light 0x7f070028
+int color green 0x7f070022
+int color red 0x7f070021
 int color wallet_bright_foreground_disabled_holo_light 0x7f070019
 int color wallet_bright_foreground_holo_dark 0x7f070014
 int color wallet_bright_foreground_holo_light 0x7f07001a
@@ -216,8 +220,9 @@ int color wallet_hint_foreground_holo_dark 0x7f07001c
 int color wallet_hint_foreground_holo_light 0x7f07001b
 int color wallet_holo_blue_light 0x7f07001f
 int color wallet_link_text_light 0x7f070020
-int color wallet_primary_text_holo_light 0x7f070024
-int color wallet_secondary_text_holo_dark 0x7f070025
+int color wallet_primary_text_holo_light 0x7f070029
+int color wallet_secondary_text_holo_dark 0x7f07002a
+int color white 0x7f070024
 int dimen abc_action_bar_default_height 0x7f080002
 int dimen abc_action_bar_icon_vertical_padding 0x7f080003
 int dimen abc_action_bar_progress_bar_size 0x7f08000a
@@ -251,6 +256,9 @@ int dimen com_facebook_profilepictureview_preset_size_small 0x7f08001b
 int dimen com_facebook_tooltip_horizontal_padding 0x7f08001e
 int dimen com_facebook_usersettingsfragment_profile_picture_height 0x7f080014
 int dimen com_facebook_usersettingsfragment_profile_picture_width 0x7f080013
+int dimen list_padding 0x7f080022
+int dimen shadow_width 0x7f080023
+int dimen slidingmenu_offset 0x7f080021
 int drawable abc_ab_bottom_solid_dark_holo 0x7f020000
 int drawable abc_ab_bottom_solid_light_holo 0x7f020001
 int drawable abc_ab_bottom_transparent_dark_holo 0x7f020002
@@ -572,6 +580,7 @@ int id withText 0x7f05000c
 int id wrap_content 0x7f05002c
 int integer abc_max_action_buttons 0x7f090000
 int integer google_play_services_version 0x7f090001
+int integer num_cols 0x7f090002
 int layout abc_action_bar_decor 0x7f030000
 int layout abc_action_bar_decor_include 0x7f030001
 int layout abc_action_bar_decor_overlay 0x7f030002
@@ -698,6 +707,7 @@ int string common_google_play_services_update_text 0x7f0a003a
 int string common_google_play_services_update_title 0x7f0a0039
 int string common_signin_button_text 0x7f0a0044
 int string common_signin_button_text_long 0x7f0a0045
+int string contact 0x7f0a004c
 int string hello_world 0x7f0a0048
 int string settings 0x7f0a004b
 int string wallet_buy_button_place_holder 0x7f0a0046

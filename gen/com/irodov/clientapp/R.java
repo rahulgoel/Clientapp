@@ -1363,10 +1363,12 @@ containing a value of this type.
         public static final int abc_split_action_bar_is_narrow=0x7f060002;
     }
     public static final class color {
-        public static final int abc_search_url_text_holo=0x7f070021;
+        public static final int abc_search_url_text_holo=0x7f070026;
         public static final int abc_search_url_text_normal=0x7f070000;
         public static final int abc_search_url_text_pressed=0x7f070002;
         public static final int abc_search_url_text_selected=0x7f070001;
+        public static final int black=0x7f070025;
+        public static final int blue=0x7f070023;
         public static final int com_facebook_blue=0x7f070005;
         public static final int com_facebook_loginview_text_color=0x7f070009;
         public static final int com_facebook_picker_search_bar_background=0x7f070003;
@@ -1386,8 +1388,10 @@ containing a value of this type.
         public static final int common_signin_btn_light_text_disabled=0x7f070010;
         public static final int common_signin_btn_light_text_focused=0x7f070011;
         public static final int common_signin_btn_light_text_pressed=0x7f07000f;
-        public static final int common_signin_btn_text_dark=0x7f070022;
-        public static final int common_signin_btn_text_light=0x7f070023;
+        public static final int common_signin_btn_text_dark=0x7f070027;
+        public static final int common_signin_btn_text_light=0x7f070028;
+        public static final int green=0x7f070022;
+        public static final int red=0x7f070021;
         public static final int wallet_bright_foreground_disabled_holo_light=0x7f070019;
         /** 
          Wallet colors to support consistent Wallet fragment holo dark UI in client application
@@ -1406,8 +1410,9 @@ containing a value of this type.
         public static final int wallet_hint_foreground_holo_light=0x7f07001b;
         public static final int wallet_holo_blue_light=0x7f07001f;
         public static final int wallet_link_text_light=0x7f070020;
-        public static final int wallet_primary_text_holo_light=0x7f070024;
-        public static final int wallet_secondary_text_holo_dark=0x7f070025;
+        public static final int wallet_primary_text_holo_light=0x7f070029;
+        public static final int wallet_secondary_text_holo_dark=0x7f07002a;
+        public static final int white=0x7f070024;
     }
     public static final class dimen {
         /**  Default height of an action bar. 
@@ -1516,6 +1521,9 @@ containing a value of this type.
         public static final int com_facebook_tooltip_horizontal_padding=0x7f08001e;
         public static final int com_facebook_usersettingsfragment_profile_picture_height=0x7f080014;
         public static final int com_facebook_usersettingsfragment_profile_picture_width=0x7f080013;
+        public static final int list_padding=0x7f080022;
+        public static final int shadow_width=0x7f080023;
+        public static final int slidingmenu_offset=0x7f080021;
     }
     public static final class drawable {
         public static final int abc_ab_bottom_solid_dark_holo=0x7f020000;
@@ -1865,6 +1873,7 @@ containing a value of this type.
          */
         public static final int abc_max_action_buttons=0x7f090000;
         public static final int google_play_services_version=0x7f090001;
+        public static final int num_cols=0x7f090002;
     }
     public static final class layout {
         public static final int abc_action_bar_decor=0x7f030000;
@@ -2088,6 +2097,7 @@ containing a value of this type.
         /**  Long form sign-in button text [CHAR LIMIT=30] 
          */
         public static final int common_signin_button_text_long=0x7f0a0045;
+        public static final int contact=0x7f0a004c;
         public static final int hello_world=0x7f0a0048;
         public static final int settings=0x7f0a004b;
         /**  Text on a placeholder buy button when Google Play services is not
