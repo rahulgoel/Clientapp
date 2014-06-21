@@ -201,8 +201,9 @@ public class MainActivity extends FragmentActivity {
 	        try{
 	    	 
 
-	    	String list[]={"clothing_store","shoe_store"};
-	        menu = new SlidingMenu(this);
+	    	String list[]={"Clothes","shoes"};
+	    //	setBehindContentView(R.layout.menu_frame);
+	    	menu = new SlidingMenu(this);
 			menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
 			menu.setShadowWidthRes(R.dimen.shadow_width);
 			menu.setShadowDrawable(R.drawable.shadow);
@@ -210,6 +211,7 @@ public class MainActivity extends FragmentActivity {
 			menu.setFadeDegree(0.35f);
 			menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
 			menu.setMenu(R.layout.menu_frame);
+			
 			MenuList Menu= newInstance(list);
 			getSupportFragmentManager()
 			.beginTransaction()
@@ -232,6 +234,10 @@ public class MainActivity extends FragmentActivity {
         }
         
     }
+    public void loadNewPlaces(String s){
+    	new LoadPlaces().execute(s);
+    }
+    
     @Override
     public void onResume() {
         super.onResume();
@@ -246,7 +252,9 @@ public class MainActivity extends FragmentActivity {
 			super.onBackPressed();
 		}
 	}
-    
+    public void showContent(){
+    	menu.showContent();
+    }
     public static MenuList newInstance(String S[]){
     	 Bundle bundle = new Bundle();
 	        String myMessage[] = S;
@@ -408,6 +416,9 @@ public class MainActivity extends FragmentActivity {
             return false;
         }
     }
+    public void clearPlacesList(){
+    	placesListItems.clear();
+    }
     public void setString(GPSTracker gpsTracker){
     	  String stringLatitude = String.valueOf(gpsTracker.latitude);
           textview = (TextView)findViewById(R.id.fieldLatitude);
@@ -433,12 +444,6 @@ public class MainActivity extends FragmentActivity {
           textview = (TextView)findViewById(R.id.fieldAddressLine);
           textview.setText("The address line is:"+addressLine);
     }
-
-
-    
-
-
- 
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {

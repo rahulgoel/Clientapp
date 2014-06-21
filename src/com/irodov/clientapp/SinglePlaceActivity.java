@@ -1,13 +1,20 @@
 package com.irodov.clientapp;
 
+import java.util.Locale;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
  
 public class SinglePlaceActivity extends Activity {
     // flag for Internet connection status
@@ -27,16 +34,20 @@ public class SinglePlaceActivity extends Activity {
      
     // Progress dialog
     ProgressDialog pDialog;
-     
+    
+    double lati;
+
+	double longi;
     // KEY Strings
     public static String KEY_REFERENCE = "reference"; // id of the place
- 
+    
+    Button showMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setContentView(R.layout.single_detail);
-         
+        showMap = (Button) findViewById(R.id.show_map_detail);
         Intent i = getIntent();
          
         // Place referece id
@@ -44,6 +55,48 @@ public class SinglePlaceActivity extends Activity {
          
         // Calling a Async Background thread
         new LoadSinglePlaceDetails().execute(reference);
+        
+        showMap.setOnClickListener(new View.OnClickListener() {
+        	
+            @Override
+            public void onClick(View v) {
+            /*    Intent i = new Intent(getApplicationContext(),
+                        PlacesMapActivity.class);
+                // Sending user current geo location
+                i.putExtra("user_latitude", Double.toString(lati));
+                i.putExtra("user_longitude", Double.toString(longi));
+                 
+                // passing near places to map activity
+                i.putExtra("near_places", new PlacesList());
+                // staring activity
+                startActivity(i);*/
+             /*   
+            	String uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?daddr=%f,%f (%s)",lati, longi, "Destination");
+            	Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+            	intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+            	startActivity(intent);*/
+            	
+                String uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?&daddr=%f,%f (%s)", lati,longi, "Destination");
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+                try
+                {
+                    startActivity(intent);
+                }
+                catch(ActivityNotFoundException ex)
+                {
+                    try
+                    {
+                        Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                        startActivity(unrestrictedIntent);
+                    }
+                    catch(ActivityNotFoundException innerEx)
+                    {
+                        Toast.makeText(getApplicationContext(), "Please install a maps application", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        });
     }
      
      
@@ -108,8 +161,9 @@ public class SinglePlaceActivity extends Activity {
                                 String phone = placeDetails.result.formatted_phone_number;
                                 String latitude = Double.toString(placeDetails.result.geometry.location.lat);
                                 String longitude = Double.toString(placeDetails.result.geometry.location.lng);
-                                 
-                                Log.d("Place ", name + address + phone + latitude + longitude);
+                                 lati=placeDetails.result.geometry.location.lat;
+                                 longi=placeDetails.result.geometry.location.lng;
+                                 Log.d("Place ", name + address + phone + latitude + longitude);
                                  
                                 // Displaying all the details in the view
                                 // single_place.xml

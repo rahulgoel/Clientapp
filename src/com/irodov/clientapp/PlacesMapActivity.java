@@ -53,6 +53,7 @@ public class PlacesMapActivity extends  FragmentActivity{
          
         // Nearplaces list
         nearPlaces = (PlacesList) i.getSerializableExtra("near_places");
+        
         Log.e("Places","Lati:"+user_latitude);
        /*  mMapFragment = MapFragment.newInstance();
         FragmentTransaction fragmentTransaction =
@@ -108,7 +109,7 @@ public class PlacesMapActivity extends  FragmentActivity{
         int minLong = Integer.MAX_VALUE;
         int maxLat = Integer.MIN_VALUE;
         int maxLong = Integer.MIN_VALUE;
- 
+        
         // check for null in case it is null
         if (nearPlaces.results != null) {
             // loop through all the places

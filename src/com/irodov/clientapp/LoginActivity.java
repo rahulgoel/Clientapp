@@ -123,12 +123,12 @@ public class LoginActivity extends Activity {
         	public void onClick(View view){
         
         		Session.openActiveSession(LoginActivity.this, true, new Session.StatusCallback() {
-
+        			
 	            // callback when session changes state
 	            @Override
 	            public void call(Session session, SessionState state, Exception exception) {
 	            	if (session.isOpened()) {
-	
+	            		
 	                    // make request to the /me API
 	                    Request.newMeRequest(session, new Request.GraphUserCallback() {
 	
@@ -168,5 +168,15 @@ public class LoginActivity extends Activity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
+    }
+    
+    class fblogin extends AsyncTask<String, String, String> {
+
+		@Override
+		protected String doInBackground(String... params) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+    	
     }
 }

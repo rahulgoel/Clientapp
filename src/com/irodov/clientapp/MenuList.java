@@ -1,8 +1,15 @@
 package com.irodov.clientapp;
 
 
+
+
+import java.util.List;
+
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,7 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MenuList extends ListFragment {
 	String s[];
@@ -33,6 +42,40 @@ public class MenuList extends ListFragment {
 		setListAdapter(adapter);
 	}
 
+	@Override
+	public void onListItemClick(ListView lv, View v, int position, long id) {
+		Fragment newContent = null;
+		MainActivity m =(MainActivity)getActivity();
+		SlidingMenu s;
+		switch (position) {
+		case 0:
+	//		newContent = new ColorFragment(R.color.red);
+			m.clearPlacesList();
+			m.loadNewPlaces("clothing_store");
+			m.showContent();
+			Log.d("click","ITS happening");
+			break;
+		case 1:
+			m.clearPlacesList();
+			m.loadNewPlaces("shoe_store");
+			m.showContent();
+	//		newContent = new ColorFragment(R.color.green);
+			break;
+		case 2:
+//			newContent = new ColorFragment(R.color.blue);
+			break;
+		case 3:
+	//		newContent = new ColorFragment(android.R.color.white);
+			break;
+		case 4:
+		//	newContent = new ColorFragment(android.R.color.black);
+			break;
+		}
+/*		if (newContent != null)
+			switchFragment(newContent);*/
+	}
+	
+	
 	private class SampleItem {
 		public String tag;
 		public int iconRes;
