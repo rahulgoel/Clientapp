@@ -45,7 +45,7 @@
 # view res/layout/abc_search_view.xml #generated:85
 -keep class android.support.v7.widget.SearchView$SearchAutoComplete { <init>(...); }
 
-# view AndroidManifest.xml #generated:64
+# view AndroidManifest.xml #generated:65
 -keep class com.facebook.LoginActivity { <init>(...); }
 
 # view res/layout/com_facebook_usersettingsfragment.xml #generated:48
@@ -60,19 +60,19 @@
 # view res/layout/text_bubble.xml #generated:8
 -keep class com.google.maps.android.ui.RotationLayout { <init>(...); }
 
-# view AndroidManifest.xml #generated:38
+# view AndroidManifest.xml #generated:39
 -keep class com.irodov.clientapp.LoginActivity { <init>(...); }
 
 # view AndroidManifest.xml #generated:29
 -keep class com.irodov.clientapp.MainActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:53
+# view AndroidManifest.xml #generated:54
 -keep class com.irodov.clientapp.PlacesMapActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:43
+# view AndroidManifest.xml #generated:44
 -keep class com.irodov.clientapp.RegisterActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:48
+# view AndroidManifest.xml #generated:49
 -keep class com.irodov.clientapp.SinglePlaceActivity { <init>(...); }
 
 # view res/layout/slidingmenumain.xml #generated:2

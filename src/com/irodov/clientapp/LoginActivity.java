@@ -11,6 +11,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -40,7 +41,7 @@ public class LoginActivity extends Activity {
     private static String KEY_NAME = "name";
     private static String KEY_EMAIL = "email";
     private static String KEY_CREATED_AT = "created_at";
- 
+    ProgressDialog pDialogLogin;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +83,7 @@ public class LoginActivity extends Activity {
                             //  Clear all previous data in database
                             userFunction.logoutUser(getApplicationContext());
                             db.addUser(json_user.getString(KEY_NAME), json_user.getString(KEY_EMAIL), json.getString(KEY_UID), json_user.getString(KEY_CREATED_AT));                        
-                             
+                             MainActivity.Logged=true;
                             // Launch Dashboard Screen
                             Intent dashboard = new Intent(getApplicationContext(), MainActivity.class);
                              
@@ -121,9 +122,31 @@ public class LoginActivity extends Activity {
         });
         facebook.setOnClickListener(new View.OnClickListener(){
         	public void onClick(View view){
-        
-        		Session.openActiveSession(LoginActivity.this, true, new Session.StatusCallback() {
-        			
+        		new fblogin().execute();
+        	
+        	}
+        });
+	        
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
+    }
+    
+    class fblogin extends AsyncTask<String, String, Boolean> {
+    	protected void onPreExecute() {
+		//	setContentView(R.layout.loading); 
+            pDialogLogin = new ProgressDialog(LoginActivity.this);
+            pDialogLogin.setMessage(Html.fromHtml("<b>Search</b><br/>Logging with Fb"));
+            pDialogLogin.setIndeterminate(false);
+            pDialogLogin.setCancelable(false);
+            pDialogLogin.show();
+	  }
+		protected Boolean doInBackground(String... params) {
+			 boolean value1=false;
+			Session.openActiveSession(LoginActivity.this, true, new Session.StatusCallback() {
+				 
 	            // callback when session changes state
 	            @Override
 	            public void call(Session session, SessionState state, Exception exception) {
@@ -143,7 +166,8 @@ public class LoginActivity extends Activity {
 	                             
 	                            // Launch Dashboard Screen
 	                          	MainActivity.Logged=true;
-	                            Intent dashboard = new Intent(getApplicationContext(), MainActivity.class);
+	                          	
+	                          	Intent dashboard = new Intent(getApplicationContext(), MainActivity.class);
 	                             
 	                            // Close all views before launching Dashboard
 	                            dashboard.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -154,29 +178,18 @@ public class LoginActivity extends Activity {
 	                        }
 	                        else{
 	                        	loginErrorMsg.setText("Cannot login from FB");
+	                        	
 	                        }
 	                      }
 	                    }).executeAsync();
 	            	}
 	            }
 	          });
-        	}
-        });
-	        
-    }
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
-    }
-    
-    class fblogin extends AsyncTask<String, String, String> {
-
-		@Override
-		protected String doInBackground(String... params) {
-			// TODO Auto-generated method stub
-			return null;
+			return value1;
 		}
-    	
+    
+		 protected void onPostExecute() {
+			 pDialogLogin.dismiss();
+		 }
     }
 }

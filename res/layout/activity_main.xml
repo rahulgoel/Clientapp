@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context="com.irodov.clientapp.MainActivity"
     tools:ignore="MergeRootFrame" >
-
+<!--
     <TextView
         android:id="@+id/fieldLongitude"
         android:layout_width="wrap_content"
@@ -58,7 +58,7 @@
     android:layout_below="@+id/fieldAddressLine"
     android:layout_marginTop="20dp"
     android:text="TextViewCunt" />
-
+-->
 
 
 <Button

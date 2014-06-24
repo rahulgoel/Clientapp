@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -90,9 +91,9 @@ public class MainActivity extends FragmentActivity {
       //  FragmentTransaction transaction= fm.beginTransaction();
       //  transaction.hide(fragment_setting);
      //   transaction.commit();
-     
-        Logged=userFunctions.isUserLoggedIn(getApplicationContext());
-        Logged= isLoggedIn();
+        Logged= (isLoggedIn()||userFunctions.isUserLoggedIn(getApplicationContext()));
+        
+        
         if(Logged){
         	googlePlaces =new GooglePlaces();
         	Log.d("Debug","we are here2");
@@ -114,7 +115,7 @@ public class MainActivity extends FragmentActivity {
         	Button logout = (Button)findViewById(R.id.Logout);
         	if (gpsTracker.canGetLocation())
         	{
-        		setString(gpsTracker); //set text: see function below
+        	  //	setString(gpsTracker); //set text: see function below
         		Log.d("Your Location", "latitude:" + gpsTracker.getLatitude() + ", longitude: " + gpsTracker.getLongitude());
         	}
 	        else
@@ -132,7 +133,7 @@ public class MainActivity extends FragmentActivity {
              // calling background Async task to load Google Places
              // After getting places from Google all the data is shown in listview
              
-             String place ="cafe";
+             String place ="cafe|restaurant";
              new LoadPlaces().execute(place);
              
              Log.d("Debug","we are here");
@@ -179,7 +180,9 @@ public class MainActivity extends FragmentActivity {
 					// TODO Auto-generated method stub
 					
 					gpsTracker.updateGPSCoordinates();
-					setString(gpsTracker);
+					loadNewPlaces("restaurant");
+					//		setString(gpsTracker);
+					
 				}
 			});
 	        logout.setOnClickListener(new View.OnClickListener() {
@@ -235,7 +238,9 @@ public class MainActivity extends FragmentActivity {
         
     }
     public void loadNewPlaces(String s){
+    	placesListItems.clear();
     	new LoadPlaces().execute(s);
+    	menu.showContent();
     }
     
     @Override
@@ -419,7 +424,7 @@ public class MainActivity extends FragmentActivity {
     public void clearPlacesList(){
     	placesListItems.clear();
     }
-    public void setString(GPSTracker gpsTracker){
+ /*   public void setString(GPSTracker gpsTracker){
     	  String stringLatitude = String.valueOf(gpsTracker.latitude);
           textview = (TextView)findViewById(R.id.fieldLatitude);
           textview.setText("The Latitude is:"+stringLatitude);
@@ -444,7 +449,7 @@ public class MainActivity extends FragmentActivity {
           textview = (TextView)findViewById(R.id.fieldAddressLine);
           textview.setText("The address line is:"+addressLine);
     }
-
+*/
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // only add the menu when the selection fragment is showing
@@ -465,6 +470,17 @@ public class MainActivity extends FragmentActivity {
         }
         return false;
     }
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
+            setContentView(R.layout.activity_main);
+        }
+        else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            setContentView(R.layout.activity_main);         
+        }
+    }
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.equals(settings)) {
