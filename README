@@ -5,3 +5,4 @@ Google Maps APIv2 are used.
 Sliding menu by Jeremy is a dependency.
 The app shows nearest restaurants using Google APIs , the menu can be used to switch in clothes shop and shoes shop.
 The places can be displayed on a map and it can be used to navigate to the place.
+Has asynchronous loading and view persistant data.
