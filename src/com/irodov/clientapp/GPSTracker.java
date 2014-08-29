@@ -54,8 +54,10 @@ public class GPSTracker extends Service implements LocationListener
 
     public GPSTracker(Context context) 
     {
-        this.mContext = context;
+        Log.d("GPSTracker","Constructor:"+context.getPackageName());
+    	this.mContext = context;
         getLocation();
+        
     }
 
     public Location getLocation()
@@ -72,7 +74,9 @@ public class GPSTracker extends Service implements LocationListener
 
             if (!isGPSEnabled && !isNetworkEnabled)
             {
-                // no network provider is enabled
+               Log.d("GPSTracker","Cannot get location:75");
+            	
+            	// no network provider is enabled
             }
             else
             {
@@ -86,7 +90,7 @@ public class GPSTracker extends Service implements LocationListener
                             MIN_TIME_BW_UPDATES,
                             MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
 
-                    Log.d("Network", "Network");
+                    Log.d("GPSTracker", "Network");
 
                     if (locationManager != null)
                     {
@@ -180,7 +184,11 @@ public class GPSTracker extends Service implements LocationListener
     {
         return this.canGetLocation;
     }
-
+    /*reload GPSTracker */
+    public void refreshGps(){
+    	getLocation();
+    }
+    
     /**
      * Function to show settings alert dialog
      */

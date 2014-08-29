@@ -34,7 +34,7 @@ public class MenuList extends ListFragment {
 		super.onActivityCreated(savedInstanceState);
 		Bundle args = getArguments();
 		s = args.getStringArray("Places");
-		Log.d("Length","Its"+s.length);
+		Log.d("Menulist:Length","Its"+s.length);
 		SampleAdapter adapter = new SampleAdapter(getActivity());
 		for (int i = 0; i < s.length; i++) {
 			adapter.add(new SampleItem(s[i], android.R.drawable.ic_menu_search));
@@ -44,16 +44,14 @@ public class MenuList extends ListFragment {
 
 	@Override
 	public void onListItemClick(ListView lv, View v, int position, long id) {
-		Fragment newContent = null;
 		MainActivity m =(MainActivity)getActivity();
-		SlidingMenu s;
 		switch (position) {
 		case 0:
 	//		newContent = new ColorFragment(R.color.red);
 			m.clearPlacesList();
 			m.loadNewPlaces("clothing_store");
 			m.showContent();
-			Log.d("click","ITS happening");
+			Log.d("Menulist","ITS happening");
 			break;
 		case 1:
 			m.clearPlacesList();

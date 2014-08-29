@@ -11,6 +11,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +20,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
  
+
+
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
@@ -26,7 +30,7 @@ import com.facebook.model.GraphUser;
 import com.irodov.clientapp.DatabaseHandler;
 import com.irodov.clientapp.UserFunctions;
  
-public class LoginActivity extends Activity {
+public class LoginActivity extends FragmentActivity implements TaskFragment.TaskCallbacks {
     Button btnLogin;
     Button btnLinkToRegister;
     EditText inputEmail;
@@ -42,6 +46,15 @@ public class LoginActivity extends Activity {
     private static String KEY_EMAIL = "email";
     private static String KEY_CREATED_AT = "created_at";
     ProgressDialog pDialogLogin;
+    
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final boolean DEBUG = true; // Set this to false to disable logs.
+
+    private static final String KEY_CURRENT_PROGRESS = "current_progress";
+    private static final String KEY_PERCENT_PROGRESS = "percent_progress";
+    private static final String TAG_TASK_FRAGMENT = "task_fragment";
+
+    private TaskFragment mTaskFragment;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,11 +135,25 @@ public class LoginActivity extends Activity {
         });
         facebook.setOnClickListener(new View.OnClickListener(){
         	public void onClick(View view){
-        		new fblogin().execute();
-        	
+    //    		new fblogin().execute();
+        		 if (mTaskFragment.isRunning()) {
+        	          mTaskFragment.cancel();
+        	        } else {
+        	          mTaskFragment.start();
+        	        }
         	}
         });
-	        
+	    
+        FragmentManager fm = getSupportFragmentManager();
+        mTaskFragment = (TaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
+
+        // If the Fragment is non-null, then it is being retained
+        // over a configuration change.
+        if (mTaskFragment == null) {
+          mTaskFragment = new TaskFragment();
+          fm.beginTransaction().add(mTaskFragment, TAG_TASK_FRAGMENT).commit();
+        }
+        
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -134,7 +161,7 @@ public class LoginActivity extends Activity {
         Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
     }
     
-    class fblogin extends AsyncTask<String, String, Boolean> {
+    /*class fblogin extends AsyncTask<String, String, Boolean> {
     	protected void onPreExecute() {
 		//	setContentView(R.layout.loading); 
             pDialogLogin = new ProgressDialog(LoginActivity.this);
@@ -192,4 +219,31 @@ public class LoginActivity extends Activity {
 			 pDialogLogin.dismiss();
 		 }
     }
+*/
+	@Override
+	public void onPreExecute() {
+		// TODO Auto-generated method stub
+		pDialogLogin = new ProgressDialog(this);
+        pDialogLogin.setMessage(Html.fromHtml("<b>Search</b><br/>Logging with Fb"));
+      //  pDialogLogin.setIndeterminate(false);
+     //   pDialogLogin.setCancelable(false);
+        pDialogLogin.show();
+	}
+	
+	@Override
+	public void onProgressUpdate(int percent) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onCancelled() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onPostExecute() {
+		// TODO Auto-generated method stub
+		pDialogLogin.dismiss();
+	}
 }

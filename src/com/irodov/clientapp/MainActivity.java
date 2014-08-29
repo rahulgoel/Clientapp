@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
@@ -27,18 +28,27 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+
 import com.facebook.Session;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
-public class MainActivity extends FragmentActivity {
-	
+public class MainActivity extends FragmentActivity implements TaskFragmentMain.TaskCallbacksMain{
+	private static final String TAG = MainActivity.class.getSimpleName();
+	private static final boolean DEBUG = true; // Set this to false to disable logs.
+
+	private static final String KEY_SERIAL = "Places";
+	private static final String KEY_PERCENT_PROGRESS = "percent_progress";
+	private static final String TAG_TASK_FRAGMENT1 = "task_fragment_1";
+	private TaskFragmentMain mTaskFragment;
 	UserFunctions userFunctions ;
     TextView textview;
     GPSTracker gpsTracker;
     private MenuItem settings,contact;
     private boolean isResumed = false;
+    private boolean isResumed1 = false;
     public static boolean Logged;
     // flag for Internet connection status
     boolean isInternetPresent = false;
@@ -57,6 +67,8 @@ public class MainActivity extends FragmentActivity {
     // Places List
     PlacesList nearPlaces;
  
+    //flag for focus
+
     // GPS Location
     GPSTracker gps;
  
@@ -68,7 +80,7 @@ public class MainActivity extends FragmentActivity {
      
     // Places Listview
     ListView lv;
-     
+    boolean flag1;
     // ListItems data
     ArrayList<HashMap<String, String>> placesListItems = new ArrayList<HashMap<String,String>>();
      
@@ -83,19 +95,19 @@ public class MainActivity extends FragmentActivity {
     @Override
 	public void onCreate(Bundle savedInstanceState) {    
     	super.onCreate(savedInstanceState);
+    	flag1=false;
         userFunctions= new UserFunctions();
         int status=GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext());
         Log.d("hello","status"+status);
         cd = new ConnectionDetector(getApplicationContext());
-      //  fragment_setting = fm.findFragmentById(R.id.userSettingsFragment);
-      //  FragmentTransaction transaction= fm.beginTransaction();
-      //  transaction.hide(fragment_setting);
-     //   transaction.commit();
+     
         Logged= (isLoggedIn()||userFunctions.isUserLoggedIn(getApplicationContext()));
-        
+        if(savedInstanceState!=null){
+        	nearPlaces=(PlacesList) savedInstanceState.getSerializable(KEY_SERIAL);
+        }
         
         if(Logged){
-        	googlePlaces =new GooglePlaces();
+        	//googlePlaces =new GooglePlaces();
         	Log.d("Debug","we are here2");
         	setContentView(R.layout.activity_main);
         	isInternetPresent = cd.isConnectingToInternet();
@@ -125,16 +137,33 @@ public class MainActivity extends FragmentActivity {
 	            // Ask user to enable GPS/network in settings
 	            gpsTracker.showSettingsAlert();         
 	        }
+        	 FragmentManager fm = getSupportFragmentManager();
+        	 mTaskFragment = (TaskFragmentMain) fm.findFragmentByTag(TAG_TASK_FRAGMENT1);
+
+        	    // If the Fragment is non-null, then it is being retained
+        	    // over a configuration change.
+        	 if (mTaskFragment == null) {
+        		 mTaskFragment = new TaskFragmentMain();
+        		 fm.beginTransaction().add(mTaskFragment, TAG_TASK_FRAGMENT1).commit();
+        	 }
         	 lv = (ListView) findViewById(R.id.list);
-             
+             if(mTaskFragment.nearPlaces!=null)
+            	 nearPlaces=mTaskFragment.nearPlaces;
              // button show on map
              btnShowOnMap = (Button) findViewById(R.id.btn_show_map);
       
              // calling background Async task to load Google Places
              // After getting places from Google all the data is shown in listview
              
-             String place ="cafe|restaurant";
-             new LoadPlaces().execute(place);
+             
+             
+          //   if (mTaskFragment.isRunning()) {
+ 	        //	mTaskFragment.cancel();
+ 	        //} else {
+ 	        	
+ 	       // }
+             
+          //   new LoadPlaces().execute(place);
              
              Log.d("Debug","we are here");
              
@@ -225,9 +254,9 @@ public class MainActivity extends FragmentActivity {
 	        }
 	     catch(Exception e){
 	    	 Log.e("SlidingMenu",e.toString());
-	     }
-	        
-	    }
+	     }	
+	      
+        }
         else{
         	 Intent login = new Intent(getApplicationContext(), LoginActivity.class);
              login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -239,14 +268,15 @@ public class MainActivity extends FragmentActivity {
     }
     public void loadNewPlaces(String s){
     	placesListItems.clear();
-    	new LoadPlaces().execute(s);
+    	mTaskFragment.start(s);
     	menu.showContent();
     }
     
     @Override
     public void onResume() {
-        super.onResume();
-        isResumed = true;
+    	  isResumed = true;
+    	super.onResume();
+      
     }
 
     @Override
@@ -269,145 +299,6 @@ public class MainActivity extends FragmentActivity {
 			return Menu;
     }
     
-    class LoadPlaces extends AsyncTask<String, String, String> {
-    	 
-        /**
-         * Before starting background thread Show Progress Dialog
-         * */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage(Html.fromHtml("<b>Search</b><br/>Loading Places..."));
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
- 
-        /**
-         * getting Places JSON
-         * */
-        protected String doInBackground(String... places) {
-            // creating Places class object
-            //googlePlaces = new GooglePlaces();
-             Log.d("Back","are we ever:"+gpsTracker.getLatitude());
-             
-            try {
-            	
-                // Separeate your place types by PIPE symbol "|"
-                // If you want all types places make it as null
-                // Check list of types supported by google
-                // 
-                String types = places[0]; // Listing places only cafes, restaurants
-                 
-                // Radius in meters - increase this value if you don't find any places
-                double radius = 1000; // 1000 meters 
-                 
-                // get nearest places
-                nearPlaces = googlePlaces.search(gpsTracker.getLatitude(),
-                        gpsTracker.getLongitude(), radius, types);
-                 
- 
-            } catch (Exception e) {
-            	Log.e("nearplaces",e.toString());
-                e.printStackTrace();
-            }
-            return null;
-        }
-    
-        /**
-         * After completing background task Dismiss the progress dialog
-         * and show the data in UI
-         * Always use runOnUiThread(new Runnable()) to update UI from background
-         * thread, otherwise you will get error
-         * **/
-        protected void onPostExecute(String file_url) {
-            // dismiss the dialog after getting all products
-            pDialog.dismiss();
-            // updating UI from Background Thread
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    /**
-                     * Updating parsed Places into LISTVIEW
-                     * */
-                    // Get json response status
-                	String status="";
-                	try{
-                	 status = nearPlaces.status;
-                	}
-                	catch(Exception e){
-                		Log.e("MainactivityN","NULL:"+e.toString());
-                	}
-                    // Check for all possible status
-                    if(status.equals("OK")){
-                        // Successfully got places details
-                        if (nearPlaces.results != null) {
-                            // loop through each place
-                            for (Place p : nearPlaces.results) {
-                                HashMap<String, String> map = new HashMap<String, String>();
-                                 
-                                // Place reference won't display in listview - it will be hidden
-                                // Place reference is used to get "place full details"
-                                map.put(KEY_REFERENCE, p.reference);
-                                 
-                                // Place name
-                                map.put(KEY_NAME, p.name);
-                                 
-                                 
-                                // adding HashMap to ArrayList
-                                placesListItems.add(map);
-                            }
-                            // list adapter
-                            ListAdapter adapter = new SimpleAdapter(MainActivity.this, placesListItems,
-                                    R.layout.list_item,
-                                    new String[] { KEY_REFERENCE, KEY_NAME}, new int[] {
-                                            R.id.reference, R.id.name });
-                             
-                            // Adding data into listview
-                            lv.setAdapter(adapter);
-                        }
-                    }
-                    else if(status.equals("ZERO_RESULTS")){
-                        // Zero results found
-                        alert.showAlertDialog(MainActivity.this, "Near Places",
-                                "Sorry no places found. Try to change the types of places",
-                                false);
-                    }
-                    else if(status.equals("UNKNOWN_ERROR"))
-                    {
-                        alert.showAlertDialog(MainActivity.this, "Places Error",
-                                "Sorry unknown error occured.",
-                                false);
-                    }
-                    else if(status.equals("OVER_QUERY_LIMIT"))
-                    {
-                        alert.showAlertDialog(MainActivity.this, "Places Error",
-                                "Sorry query limit to google places is reached",
-                                false);
-                    }
-                    else if(status.equals("REQUEST_DENIED"))
-                    {
-                        alert.showAlertDialog(MainActivity.this, "Places Error",
-                                "Sorry error occured. Request is denied",
-                                false);
-                    }
-                    else if(status.equals("INVALID_REQUEST"))
-                    {
-                        alert.showAlertDialog(MainActivity.this, "Places Error",
-                                "Sorry error occured. Invalid Request",
-                                false);
-                    }
-                    else
-                    {
-                        alert.showAlertDialog(MainActivity.this, "Places Error",
-                                "Sorry error occured.",
-                                false);
-                    }
-                }
-            });
-
-        }   
-    }
     @Override
     public void onPause() {
         super.onPause();
@@ -424,32 +315,12 @@ public class MainActivity extends FragmentActivity {
     public void clearPlacesList(){
     	placesListItems.clear();
     }
- /*   public void setString(GPSTracker gpsTracker){
-    	  String stringLatitude = String.valueOf(gpsTracker.latitude);
-          textview = (TextView)findViewById(R.id.fieldLatitude);
-          textview.setText("The Latitude is:"+stringLatitude);
 
-          String stringLongitude = String.valueOf(gpsTracker.longitude);
-          textview = (TextView)findViewById(R.id.fieldLongitude);
-          textview.setText("The Longitude is:"+stringLongitude);
-
-          String country = gpsTracker.getCountryName(this);
-          textview = (TextView)findViewById(R.id.fieldCountry);
-          textview.setText("The Country is:"+country);
-
-          String city = gpsTracker.getLocality(this);
-          textview = (TextView)findViewById(R.id.fieldCity);
-          textview.setText("The locality is:"+city);
-
-          String postalCode = gpsTracker.getPostalCode(this);
-          textview = (TextView)findViewById(R.id.fieldPostalCode);
-          textview.setText("The postal Code is"+postalCode);
-
-          String addressLine = gpsTracker.getAddressLine(this);
-          textview = (TextView)findViewById(R.id.fieldAddressLine);
-          textview.setText("The address line is:"+addressLine);
+    public void onSavedInstanceState(Bundle out){
+    	super.onSaveInstanceState(out);
+    	out.putSerializable(KEY_SERIAL, nearPlaces);
+    	
     }
-*/
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // only add the menu when the selection fragment is showing
@@ -470,7 +341,7 @@ public class MainActivity extends FragmentActivity {
         }
         return false;
     }
-    @Override
+    /*@Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
@@ -479,7 +350,7 @@ public class MainActivity extends FragmentActivity {
         else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             setContentView(R.layout.activity_main);         
         }
-    }
+    }*/
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -503,9 +374,316 @@ public class MainActivity extends FragmentActivity {
    //     else showFragment(fragment_setting, false);
         return false;
     }
+	@Override
+	public void onPreExecute() {
+	
+        pDialog = new ProgressDialog(this);
+        pDialog.setMessage(Html.fromHtml("<b>Search</b><br/>Loading Places..."));
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+	}
+	@Override
+	public void onProgressUpdate(int percent) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onCancelled() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		Log.d("MainActivity","OnWindowFocusChangedOut");
+		
+		if(hasFocus && isResumed==false){
+			
+			Log.d("MainActivity","OnWindowFocusChanged");
+	    	String place ="cafe|restaurant";
+	    	Log.d("MainAcFocus","FirstcallinIF");
+			mTaskFragment.start(place);
+			isResumed=true;
+	    }
+	else if(hasFocus && flag1==false){
+		//Log.d("MainAcFocus","FirstcallInElse"+mTaskFragment.nearPlaces.toString());
+		if(mTaskFragment.nearPlaces==null){
+			String place ="cafe|restaurant";
+			mTaskFragment.start(place);
+			
+		}
+		else{onPostExecute(mTaskFragment.nearPlaces);
+		
+		}
+		flag1=true;
+	}
+	}
+	
+	@Override
+	public void onPostExecute(PlacesList nearPlaces1) {
+		if(pDialog!=null)pDialog.dismiss();
+		Log.d("MainAct","Lasthere");
+		nearPlaces=nearPlaces1;
+        // updating UI from Background Thread
+        runOnUiThread(new Runnable() {
+            public void run() {
+                /**
+                 * Updating parsed Places into LISTVIEW
+                 * */
+                // Get json response status
+            	String status="";
+            	try{
+            	 status = nearPlaces.status;
+            	}
+            	catch(Exception e){
+            		Log.e("MainactivityN1","NULL:"+e.toString());
+            	}
+                // Check for all possible status
+                if(status.equals("OK")){
+                    // Successfully got places details
+                    if (nearPlaces.results != null) {
+                        // loop through each place
+                        for (Place p : nearPlaces.results) {
+                            HashMap<String, String> map = new HashMap<String, String>();
+                             
+                            // Place reference won't display in listview - it will be hidden
+                            // Place reference is used to get "place full details"
+                            map.put(KEY_REFERENCE, p.reference);
+                             
+                            // Place name
+                            map.put(KEY_NAME, p.name);
+                             
+                             
+                            // adding HashMap to ArrayList
+                            placesListItems.add(map);
+                        }
+                        // list adapter
+                 //       if(isResumed1==false){
+                        
+                        	ListAdapter adapter = new SimpleAdapter(MainActivity.this, placesListItems,
+                        			R.layout.list_item,
+	                                new String[] { KEY_REFERENCE, KEY_NAME}, new int[] {
+	                        		R.id.reference, R.id.name });
+	                        
+	                        // Adding data into listview
+                        	lv.setAdapter(adapter);
+                        	isResumed1=true;
+                   //     	}
+                        }	
+                }
+                else if(status.equals("ZERO_RESULTS")){
+                    // Zero results found
+                    alert.showAlertDialog(MainActivity.this, "Near Places",
+                            "Sorry no places found. Try to change the types of places",
+                            false);
+                }
+                else if(status.equals("UNKNOWN_ERROR"))
+                {
+                    alert.showAlertDialog(MainActivity.this, "Places Error",
+                            "Sorry unknown error occured.",
+                            false);
+                }
+                else if(status.equals("OVER_QUERY_LIMIT"))
+                {
+                    alert.showAlertDialog(MainActivity.this, "Places Error",
+                            "Sorry query limit to google places is reached",
+                            false);
+                }
+                else if(status.equals("REQUEST_DENIED"))
+                {
+                    alert.showAlertDialog(MainActivity.this, "Places Error",
+                            "Sorry error occured. Request is denied",
+                            false);
+                }
+                else if(status.equals("INVALID_REQUEST"))
+                {
+                    alert.showAlertDialog(MainActivity.this, "Places Error",
+                            "Sorry error occured. Invalid Request",
+                            false);
+                }
+                else
+                {
+                    alert.showAlertDialog(MainActivity.this, "Places Error",
+                            "Sorry error occured.",
+                            false);
+                }
+            }
+        });
+
+		
+	}
     
-  //  public void switchContent(Fragment fragment){
-   // 	getSlidingMenu().showContent();
-   // }
+ 
 
 }
+/*   public void setString(GPSTracker gpsTracker){
+String stringLatitude = String.valueOf(gpsTracker.latitude);
+textview = (TextView)findViewById(R.id.fieldLatitude);
+textview.setText("The Latitude is:"+stringLatitude);
+
+String stringLongitude = String.valueOf(gpsTracker.longitude);
+textview = (TextView)findViewById(R.id.fieldLongitude);
+textview.setText("The Longitude is:"+stringLongitude);
+
+String country = gpsTracker.getCountryName(this);
+textview = (TextView)findViewById(R.id.fieldCountry);
+textview.setText("The Country is:"+country);
+
+String city = gpsTracker.getLocality(this);
+textview = (TextView)findViewById(R.id.fieldCity);
+textview.setText("The locality is:"+city);
+
+String postalCode = gpsTracker.getPostalCode(this);
+textview = (TextView)findViewById(R.id.fieldPostalCode);
+textview.setText("The postal Code is"+postalCode);
+
+String addressLine = gpsTracker.getAddressLine(this);
+textview = (TextView)findViewById(R.id.fieldAddressLine);
+textview.setText("The address line is:"+addressLine);
+}
+*/
+//  public void switchContent(Fragment fragment){
+// 	getSlidingMenu().showContent();
+// }
+
+/*  class LoadPlaces extends AsyncTask<String, String, String> {
+
+ *//**
+  * Before starting background thread Show Progress Dialog
+  * *//*
+ @Override
+ protected void onPreExecute() {
+     super.onPreExecute();
+     pDialog = new ProgressDialog(MainActivity.this);
+     pDialog.setMessage(Html.fromHtml("<b>Search</b><br/>Loading Places..."));
+     pDialog.setIndeterminate(false);
+     pDialog.setCancelable(false);
+     pDialog.show();
+ }
+
+ *//**
+  * getting Places JSON
+  * *//*
+ protected String doInBackground(String... places) {
+     // creating Places class object
+     //googlePlaces = new GooglePlaces();
+      Log.d("Back","are we ever:"+gpsTracker.getLatitude());
+      
+     try {
+     	
+         // Separeate your place types by PIPE symbol "|"
+         // If you want all types places make it as null
+         // Check list of types supported by google
+         // 
+         String types = places[0]; // Listing places only cafes, restaurants
+          
+         // Radius in meters - increase this value if you don't find any places
+         double radius = 1000; // 1000 meters 
+          
+         // get nearest places
+         nearPlaces = googlePlaces.search(gpsTracker.getLatitude(),
+                 gpsTracker.getLongitude(), radius, types);
+          
+        
+     } catch (Exception e) {
+     	Log.e("nearplaces",e.toString());
+         e.printStackTrace();
+     }
+     return null;
+ }
+ 
+ *//**
+  * After completing background task Dismiss the progress dialog
+  * and show the data in UI
+  * Always use runOnUiThread(new Runnable()) to update UI from background
+  * thread, otherwise you will get error
+  * **//*
+ protected void onPostExecute(String file_url) {
+     // dismiss the dialog after getting all products
+     pDialog.dismiss();
+     // updating UI from Background Thread
+     runOnUiThread(new Runnable() {
+         public void run() {
+             *//**
+              * Updating parsed Places into LISTVIEW
+              * *//*
+             // Get json response status
+         	String status="";
+         	try{
+         	 status = nearPlaces.status;
+         	}
+         	catch(Exception e){
+         		Log.e("MainactivityN","NULL:"+e.toString());
+         	}
+             // Check for all possible status
+             if(status.equals("OK")){
+                 // Successfully got places details
+                 if (nearPlaces.results != null) {
+                     // loop through each place
+                     for (Place p : nearPlaces.results) {
+                         HashMap<String, String> map = new HashMap<String, String>();
+                          
+                         // Place reference won't display in listview - it will be hidden
+                         // Place reference is used to get "place full details"
+                         map.put(KEY_REFERENCE, p.reference);
+                          
+                         // Place name
+                         map.put(KEY_NAME, p.name);
+                          
+                          
+                         // adding HashMap to ArrayList
+                         placesListItems.add(map);
+                     }
+                     // list adapter
+                     ListAdapter adapter = new SimpleAdapter(MainActivity.this, placesListItems,
+                             R.layout.list_item,
+                             new String[] { KEY_REFERENCE, KEY_NAME}, new int[] {
+                                     R.id.reference, R.id.name });
+                      
+                     // Adding data into listview
+                     lv.setAdapter(adapter);
+                 }
+             }
+             else if(status.equals("ZERO_RESULTS")){
+                 // Zero results found
+                 alert.showAlertDialog(MainActivity.this, "Near Places",
+                         "Sorry no places found. Try to change the types of places",
+                         false);
+             }
+             else if(status.equals("UNKNOWN_ERROR"))
+             {
+                 alert.showAlertDialog(MainActivity.this, "Places Error",
+                         "Sorry unknown error occured.",
+                         false);
+             }
+             else if(status.equals("OVER_QUERY_LIMIT"))
+             {
+                 alert.showAlertDialog(MainActivity.this, "Places Error",
+                         "Sorry query limit to google places is reached",
+                         false);
+             }
+             else if(status.equals("REQUEST_DENIED"))
+             {
+                 alert.showAlertDialog(MainActivity.this, "Places Error",
+                         "Sorry error occured. Request is denied",
+                         false);
+             }
+             else if(status.equals("INVALID_REQUEST"))
+             {
+                 alert.showAlertDialog(MainActivity.this, "Places Error",
+                         "Sorry error occured. Invalid Request",
+                         false);
+             }
+             else
+             {
+                 alert.showAlertDialog(MainActivity.this, "Places Error",
+                         "Sorry error occured.",
+                         false);
+             }
+         }
+     });
+
+ }   
+}
+*/
